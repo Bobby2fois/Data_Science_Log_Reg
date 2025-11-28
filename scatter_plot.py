@@ -31,7 +31,7 @@ def main():
                     pass
 
     # Now plot only properly paired values
-    colors = {'Gryffindor': 'red', 'Hufflepuff': 'yellow', 'Ravenclaw': 'blue', 'Slytherin': 'green'}
+    colors = {'Gryffindor': 'blue', 'Hufflepuff': 'yellow', 'Ravenclaw': 'green', 'Slytherin': 'red'}
     for house in set(houses):
         x = [astronomy_values[i] for i in range(len(houses)) if houses[i] == house]
         y = [defense_values[i] for i in range(len(houses)) if houses[i] == house]
