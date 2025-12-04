@@ -1,21 +1,57 @@
-# Logistic Regression Implementation Guide
+# Hogwarts House Prediction using Logistic Regression
 
 ## Overview
-This document outlines the step-by-step process of implementing logistic regression for house classification at Hogwarts based on student grades in various magical subjects.
+This project implements a logistic regression model to predict the Hogwarts house of students based on their grades in various magical subjects. The implementation includes data preprocessing, model training, and prediction pipelines with proper handling of missing values.
+
+## Project Structure
+```
+.
+├── datasets/
+│   ├── dataset_train.csv    # Training data with house labels
+│   └── dataset_test.csv     # Test data for predictions
+├── logreg_train.py         # Script for training the model
+├── logreg_predict.py       # Script for making predictions
+├── logreg_utils.py         # Shared utility functions
+├── trained_model.csv       # Saved model parameters
+└── houses.csv              # Prediction outputs
+```
 
 ## Data Flow
 
 ### 1. Data Loading
+#### Training Data
 ```python
-read_csv(dataset.csv) -> List[Student]
+read_csv_training(dataset_train.csv) -> (List[Student], List[str])
 ```
-**Output:** A list of student records with their house and grades.
+- Loads training data with house labels
+- Returns list of student records and feature names
+
+#### Prediction Data
+```python
+read_csv_predict(dataset_test.csv) -> (List[Student], List[str])
+```
+- Loads test data for prediction
+- Handles missing values using training data statistics
+- Returns list of student records and feature names
+
+### 2. Data Preprocessing
+#### Handling Missing Values
+```python
+replace_missing_values(students, features, means) -> List[Student]
+```
+- Replaces missing grade values with the mean from training data
+- Ensures consistent handling of missing values between training and prediction
+
+#### Feature Matrix Creation
+```python
+create_matrix(students, features) -> Matrix X
+```
+**Output:** A matrix containing only the grade values for each student.
 
 ```
-Students: [
-    [0, House, Astronomy, Herbology, Ancient Runes, Transfiguration, Charms, Flying],
-    [1, House, Astronomy, Herbology, Ancient Runes, Transfiguration, Charms, Flying],
-    [2, House, Astronomy, Herbology, Ancient Runes, Transfiguration, Charms, Flying],
+X: [
+    [Astronomy, Herbology, Ancient Runes, Transfiguration, Charms, Flying],
+    [Astronomy, Herbology, Ancient Runes, Transfiguration, Charms, Flying],
     ...
 ]
 ```
@@ -72,66 +108,86 @@ X: [
 ]
 ```
 
-## Model Training (Per House)
+## Model Training
 
-### 6. Binary Label Creation
+### 3. Training Pipeline
 ```python
-create_binary_label(Y, house) -> Y_binary
-```
-**Output:** Binary vector where 1 indicates the target house and 0 otherwise.
+# In logreg_train.py
+students, features = read_csv_training("dataset_train.csv")
+students = remove_incomplete_stud(students, features)
+X = create_matrix(students, features)
+Y = create_house_vector(students)
+X_normalized, mean, std = normalize_values(X)
+X_with_bias = add_bias(X_normalized)
 
-```
-Y_binary: [
-    [1],  # Belongs to target house
-    [0],  # Doesn't belong
-    [1],  # Belongs to target house
-    ...
-]
+# Train one-vs-all classifiers for each house
+houses = ["Gryffindor", "Hufflepuff", "Slytherin", "Ravenclaw"]
+all_theta = []
+for house in houses:
+    Y_binary = create_binary_label(Y, house)
+    theta, _ = gradient_descent(X_with_bias, Y_binary, alpha=0.1, num_iterations=1000)
+    all_theta.append(theta)
+
+# Save model parameters
+save_model("trained_model.csv", houses, all_theta)
 ```
 
-### 7. Gradient Descent
+### 4. Model Parameters
+- Learning rate (α): 0.1
+- Number of iterations: 1000
+- Regularization: None
+- Features: Astronomy, Herbology, Ancient Runes, Transfiguration, Charms, Flying
+
+## Prediction Pipeline
+
+### 1. Loading the Model
 ```python
-gradient_descent(X_with_bias, Y_binary, alpha, num_iterations) -> (theta, cost_history)
+# In logreg_predict.py
+thetas = load_thetas("trained_model.csv")
+houses = list(thetas.keys())
 ```
-- `alpha`: Learning rate
-- `num_iterations`: Number of training iterations
 
-#### 7a. Gradient Computation
+### 2. Making Predictions
 ```python
-compute_gradient(X, Y, theta) -> gradient_vector
-```
-- `theta`: Parameter vector (size = number of features + 1)
-
-##### 7aa. Hypothesis Function
-```python
-hypothesis(X, theta) -> sigmoid(X · theta)
-```
-
-##### 7ab. Matrix Transposition
-```python
-transpose(X) -> X_T
-```
-**Example:**
-```
-X_T: [
-    [1.0, 1.0, 1.0, 1.0, 1.0, ...],
-    [-1.0179, -1.1410, -0.7841, ...],
-    [0.8699, -1.3750, 1.2528, ...],
-    ...
-]
+def predict_house(X, thetas, houses):
+    predictions = []
+    for x in X:
+        max_prob = -1
+        predicted_house = None
+        for house in houses:
+            theta = thetas[house]
+            z = sum(xi * ti for xi, ti in zip(x, theta))
+            prob = sigmoid(z)
+            if prob > max_prob:
+                max_prob = prob
+                predicted_house = house
+        predictions.append(predicted_house)
+    return predictions
 ```
 
-#### 7b. Parameter Update
-- Update theta based on computed gradients
-
-#### 7c. Cost Computation
-```python
-compute_cost(X, Y, theta) -> cost_value
+### 3. Output Format
+Predictions are saved in `houses.csv` with the following format:
 ```
-- Tracks training progress via `cost_history`
-
-### 8. Model Storage
-```python
-all_theta.append(theta)
+Index,Hogwarts House
+0,Gryffindor
+1,Slytherin
+2,Ravenclaw
+...
 ```
-**Output:** Collection of theta vectors (one per house) for future predictions.
+
+## Running the Code
+
+### Training the Model
+```bash
+python3 logreg_train.py datasets/dataset_train.csv
+```
+
+### Making Predictions
+```bash
+python3 logreg_predict.py datasets/dataset_test.csv trained_model.csv
+```
+
+## Error Handling
+- Missing values in test data are replaced with the mean from training data
+- Invalid or malformed input files raise appropriate exceptions
+- Model parameters are validated before prediction

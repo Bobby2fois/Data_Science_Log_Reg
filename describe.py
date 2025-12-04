@@ -78,16 +78,6 @@ def main():
             print(f"{header}:\n")
             stats[header] = {}
             try:
-                stats[header]['min'] = find_min(features[header])
-                print(f"min = {stats[header]['min']}")
-            except Exception as e:
-                print(f"error find_min for {header}: {e}")
-            try:
-                stats[header]['max'] = find_max(features[header])
-                print(f"max = {stats[header]['max']}")
-            except Exception as e:
-                print(f"error find_max for {header}: {e}")
-            try:
                 stats[header]['count'] = count_Mean(features[header])[0]
                 print(f"count = {stats[header]['count']}")
             except Exception as e:
@@ -103,6 +93,11 @@ def main():
             except Exception as e:
                 print(f"error std(std) for {header}: {e}")
             try:
+                stats[header]['min'] = find_min(features[header])
+                print(f"min = {stats[header]['min']}")
+            except Exception as e:
+                print(f"error find_min for {header}: {e}")
+            try:
                 stats[header]['25'] = first_quartile(features[header], stats[header]['count'])
                 print(f"25% = {stats[header]['25']}")
             except Exception as e:
@@ -114,21 +109,15 @@ def main():
                 print(f"error 50% for {header}: {e}")
             try:
                 stats[header]['75'] = third_quartile(features[header], stats[header]['count'])
-                print(f"75% = {stats[header]['75']}\n\n")
+                print(f"75% = {stats[header]['75']}")
             except Exception as e:
                 print(f"error 75% for {header}: {e}")
-        
-        # for header in features:
-        #     print(f"{header}".ljust(15), end="")
-        # print()  # This adds the newline after all headers are printed
+            try:
+                stats[header]['max'] = find_max(features[header])
+                print(f"max = {stats[header]['max']}\n\n")
+            except Exception as e:
+                print(f"error find_max for {header}: {e}")
 
-        # # Print statistics
-        # for stat in ['count', 'mean', 'std', 'min', '25', '50', '75', 'max']:
-        #     print(f"{stat}".ljust(8), end="")
-        #     for header in features:
-        #         print(f"{stats[header][stat]:.6f}".ljust(15), end="")
-        #     print()
-    
     except FileNotFoundError:
         print("File not found")
         sys.exit(1)

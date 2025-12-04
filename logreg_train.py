@@ -1,7 +1,6 @@
 import sys
 import logreg_utils
 
-
 def main():
 
     houses = ['Gryffindor', 'Hufflepuff', 'Slytherin', 'Ravenclaw']

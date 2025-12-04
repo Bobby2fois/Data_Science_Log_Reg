@@ -62,7 +62,33 @@ def main():
     feature_names = list(features.keys())
     n = len(feature_names)
 
-    fig, axes = plt.subplots(n, n, figsize=(13,13))
+    def wrap_feature_name(name, max_length=15):
+        """Wrap long feature names into multiple lines"""
+        if len(name) <= max_length:
+            return name
+        words = name.split()
+        lines = []
+        current_line = []
+        current_length = 0
+        
+        for word in words:
+            if current_length + len(word) + 1 <= max_length:
+                current_line.append(word)
+                current_length += len(word) + 1
+            else:
+                if current_line:
+                    lines.append(' '.join(current_line))
+                current_line = [word]
+                current_length = len(word)
+        
+        if current_line:
+            lines.append(' '.join(current_line))
+        
+        return '\n'.join(lines)
+    
+    wrapped_names = [wrap_feature_name(name) for name in feature_names]
+
+    fig, axes = plt.subplots(n, n, figsize=(15, 15))
 
     for i, feature1 in enumerate(feature_names):
         for j, feature2 in enumerate(feature_names):
@@ -81,17 +107,19 @@ def main():
                     ax.scatter(x_values, y_values, s=1, c=colors[house], label=house if i==0 and j==1 else "", alpha=1)
 
             if j == 0:
-                ax.set_ylabel(feature1, fontsize=7)
+                ax.set_ylabel(wrapped_names[i], fontsize=7)
             if i == n - 1:
-                ax.set_xlabel(feature2, fontsize=7)
+                ax.set_xlabel(wrapped_names[j], fontsize=7, rotation=0, ha='right')
             
             ax.set_xticks([])
             ax.set_yticks([])
     
     if n > 1:
         handles, labels = axes[0, 1].get_legend_handles_labels()
-        fig.legend(handles, labels, loc='lower right')
-    plt.tight_layout()
+        fig.legend(handles, labels, loc='upper left', fontsize=7, markerscale=3, 
+                   frameon=True, fancybox=True, shadow=True)
+    
+    plt.subplots_adjust(left=0.08, right=0.95, top=0.95, bottom=0.06, hspace=0.15, wspace=0.15)
     plt.show()
 
 if __name__ == "__main__":
