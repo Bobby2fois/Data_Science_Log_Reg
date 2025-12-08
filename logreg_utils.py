@@ -331,28 +331,20 @@ def load_thetas(filepath):
 
 
 def predict_house(X, thetas, houses):
-    predictions = []
 
+    predictions = []
     for x in X:
         max_prob = -1
-        predicted_house = None
-        
+        predicted_house = None        
         for house in houses:
-            theta = thetas[house]
-            
-            # Calculate z = θ₀ + θ₁x₁ + θ₂x₂ + ... + θₙxₙ
+            theta = thetas[house]          
             z = 0.0
             for i in range(len(x)):
-                z += x[i] * theta[i]
-            
-            # Get probability using sigmoid
+                z += x[i] * theta[i]           
             prob = sigmoid(z)
-            
-            # Track the house with highest probability
             if prob > max_prob:
                 max_prob = prob
                 predicted_house = house
-        
         predictions.append(predicted_house)
     
     return predictions  
