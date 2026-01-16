@@ -15,17 +15,15 @@ def main():
     alpha = 0.1
     num_iterations = 1000
 
-    for i, house in enumerate(houses):
+    for house in houses:
         Y_binary = logreg_utils.create_binary_label(Y, house)
-        theta, cost_history = logreg_utils.gradient_descent(X_with_bias, Y_binary, alpha, num_iterations)
+        theta, _ = logreg_utils.gradient_descent(X_with_bias, Y_binary, alpha, num_iterations)
         all_theta.append(theta)
 
     with open("datasets/weights.csv", "w") as f:
         for i, house in enumerate(houses):
             theta_str = ','.join(map(str, all_theta[i]))
             f.write(f"{house},{theta_str}\n")
-
-
 
 if __name__ == "__main__":
     main()

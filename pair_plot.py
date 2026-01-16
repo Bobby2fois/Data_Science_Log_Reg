@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import math
 
 def read_csv(file_path):
-
     features = {}
     
     with open(file_path, 'r') as f:

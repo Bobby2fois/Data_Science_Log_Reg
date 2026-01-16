@@ -1,10 +1,6 @@
 import math
 import sys
 
-# Common Core Functions ------------------------------------------------
-
-
-
 def create_matrix(students, features):
 
     X = []
@@ -37,9 +33,6 @@ def normalize_values(X):
     for h in range (len(variance)):
         variance[h] /= len(X)
         std[h] = math.sqrt(variance[h])
-    
-    i = 0
-    j = 0
 
     for i in range(len(X)):
         for j in range(len(X[i])):
@@ -169,7 +162,6 @@ def create_binary_label(Y, house):
 
 def matrix_multiply(X, Y):
     ret = []
-    i = 0
 
     for row in X:
         res = 0
@@ -205,8 +197,6 @@ def compute_cost(X, Y, theta):
 def transpose(X):
     rows = len(X)
     cols = len(X[0])
-    i = 0
-    j = 0
 
     result = []
     for j in range(cols):

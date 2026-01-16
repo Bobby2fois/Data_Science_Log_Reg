@@ -2,7 +2,6 @@ import sys
 import math
 
 def read_csv(file_path):
-
     features = {}
     
 
@@ -77,46 +76,22 @@ def main():
         for header in features:
             print(f"{header}:\n")
             stats[header] = {}
-            try:
-                stats[header]['count'] = count_Mean(features[header])[0]
-                print(f"count = {stats[header]['count']}")
-            except Exception as e:
-                print(f"error count_Mean(count) for {header}: {e}")
-            try:
-                stats[header]['mean'] = count_Mean(features[header])[1]
-                print(f"mean = {stats[header]['mean']}")
-            except Exception as e:
-                print(f"error count_mean(mean) for {header}: {e}")
-            try:
-                stats[header]['std'] = std(features[header], stats[header]['mean'], stats[header]['count'])
-                print(f"std = {stats[header]['std']}")
-            except Exception as e:
-                print(f"error std(std) for {header}: {e}")
-            try:
-                stats[header]['min'] = find_min(features[header])
-                print(f"min = {stats[header]['min']}")
-            except Exception as e:
-                print(f"error find_min for {header}: {e}")
-            try:
-                stats[header]['25'] = first_quartile(features[header], stats[header]['count'])
-                print(f"25% = {stats[header]['25']}")
-            except Exception as e:
-                print(f"error 25% for {header}: {e}")
-            try:
-                stats[header]['50'] = median(features[header], stats[header]['count'])
-                print(f"50% = {stats[header]['50']}")
-            except Exception as e:
-                print(f"error 50% for {header}: {e}")
-            try:
-                stats[header]['75'] = third_quartile(features[header], stats[header]['count'])
-                print(f"75% = {stats[header]['75']}")
-            except Exception as e:
-                print(f"error 75% for {header}: {e}")
-            try:
-                stats[header]['max'] = find_max(features[header])
-                print(f"max = {stats[header]['max']}\n\n")
-            except Exception as e:
-                print(f"error find_max for {header}: {e}")
+            stats[header]['count'] = count_Mean(features[header])[0]
+            print(f"count = {stats[header]['count']}")
+            stats[header]['mean'] = count_Mean(features[header])[1]
+            print(f"mean = {stats[header]['mean']}")
+            stats[header]['std'] = std(features[header], stats[header]['mean'], stats[header]['count'])
+            print(f"std = {stats[header]['std']}")
+            stats[header]['min'] = find_min(features[header])
+            print(f"min = {stats[header]['min']}")
+            stats[header]['25'] = first_quartile(features[header], stats[header]['count'])
+            print(f"25% = {stats[header]['25']}")
+            stats[header]['50'] = median(features[header], stats[header]['count'])
+            print(f"50% = {stats[header]['50']}")
+            stats[header]['75'] = third_quartile(features[header], stats[header]['count'])
+            print(f"75% = {stats[header]['75']}")
+            stats[header]['max'] = find_max(features[header])
+            print(f"max = {stats[header]['max']}\n\n")
 
     except FileNotFoundError:
         print("File not found")

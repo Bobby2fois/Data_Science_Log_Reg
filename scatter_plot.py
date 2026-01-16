@@ -1,7 +1,6 @@
 import sys
 import matplotlib.pyplot as plt
 
-
 def main():
     # Create properly aligned pairs
     astronomy_values = []
